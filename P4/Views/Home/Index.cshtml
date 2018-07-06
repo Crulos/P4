@@ -1,0 +1,135 @@
+﻿@model P4.Models.classPro1
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+@*@if (bool.Parse(@Session["login"]))
+    {
+
+    }*@
+
+
+
+<div id="app">
+
+    <br><br><br>
+    <div class="col-md-12">
+        <input type="text" v-model="user" placeholder="ชื่อ" class="form-control" />
+    </div>
+    <div class="col-md-12">
+        <input type="password" v-model="pass" placeholder="นาม" class="form-control" />
+    </div>
+
+    <button type="button" class="btn btn-success" v-on:click="login">Login</button>
+    <button type="submit" v-if="check" class="btn btn-success" v-on:click="create">Sign In</button>
+    <button type="button" v-if="check" class="btn btn-success" v-on:click="logout">logout</button>
+    <button type="button" v-if="check" class="btn btn-success" v-on:click="logout">New Channel</button>
+
+
+    <select>
+        <option v-for="i in listMaster" :value="i.cName1" >{{i.cName1}}</option>
+    </select>
+</div>
+
+
+    <script>
+var app = new Vue({
+  el: '#app',
+  data: {
+      user: '',
+      pass: '',
+      check: @Session["login"].ToString().ToLower(),
+      iList: '',
+      listMaster: ''
+
+    },
+  methods : {
+	create: function() {
+		//alert(this.abc)
+
+        const data = {
+            ffName: JSON.stringify({
+                fName: this.user,
+                lName: this.pass
+            })
+        }
+        this.$http.post('@Url.Action("ActionCreate", "Home")', data
+        ).then(response => {
+            if (response.data.status === '200') {
+                alert("บันทึกสำเร็จ");
+                @*window.location = '@Url.Action("Index", "Home")'*@
+            } else {
+                alert(response.data.message)
+
+            }
+
+        });
+
+      },
+     	login: function() {
+		//alert(this.abc)
+
+        const data = {
+            ffName: JSON.stringify({
+                fName: this.user,
+                lName: this.pass
+            })
+        }
+        this.$http.post('@Url.Action("Login", "Home")', data
+        ).then(response => {
+            if (response.data.status === '200') {
+                alert("เข้าสู่ระบบสำเร็จ");
+                window.location = '@Url.Action("Index", "Home")';
+
+            } else {
+                window.location = '@Url.Action("Index", "Home")';
+                alert(response.data.message)
+            }
+
+        });
+
+      },
+     	logout: function() {
+		//alert(this.abc)
+
+        this.$http.post('@Url.Action("Logout", "Home")'
+        ).then(response => {
+            if (response.data.status === '200') {
+                alert("ออกระบบ");
+                window.location = '@Url.Action("Index", "Home")';
+
+
+
+
+            } else {
+                window.location = '@Url.Action("Index", "Home")';
+                alert(response.data.message)
+            }
+
+        });
+
+      }, getListMaster: function() {
+		//alert(this.abc)
+
+        this.$http.post('@Url.Action("Master", "Home")'
+        ).then(response => {
+           
+            if (response.data.status === '200') {
+                 this.listMaster = response.data.data
+                console.log(this.listMaster)
+            } else {
+                alert(response.data.message)
+                console.log(this.listMaster)
+            }
+            console.log(this.listMaster)
+        });
+
+      },
+
+
+    },
+  mounted() {
+        this.getListMaster()
+    }
+})</script>
