@@ -62,6 +62,29 @@ namespace P4.Controllers
             { return Json(new { status = "500", message = ex.Message ,data =""}); }
 
         }
+
+        public JsonResult Find()
+        {
+
+            try
+            {
+                channelEntities p1 = new channelEntities();
+                classPro1 modelP1 = new classPro1();
+                modelP1.rooms = (
+                        from full in p1.rooms.AsEnumerable()
+                        select new
+                        {
+                            cID1 = full.cID,
+                            cName1 = full.cName,
+                            cPass1 = full.cPass,
+                            cUSer1 = full.cUser
+                        }).ToList();
+                return Json(new { status = "200", message = "success", data = modelP1.rooms });
+            }
+            catch (Exception ex)
+            { return Json(new { status = "500", message = ex.Message, data = "" }); }
+
+        }
         public ActionResult Login(string ffName)
         {
 
@@ -113,8 +136,60 @@ namespace P4.Controllers
                 Session["login"] = false;
                 return Json(new { status = "500", message = ex.Message}); }
         }
+        public ActionResult Login2(string ffName)
+        {
 
-                public JsonResult Logout()
+
+            try
+            {
+                dynamic item = JsonConvert.DeserializeObject(ffName);
+                int fName = int.Parse(item.fName.ToString());
+                string lName = item.lName;
+           
+                channelEntities p1 = new channelEntities();
+                classPro1 modelP1 = new classPro1();
+                modelP1.rooms = (
+                        from full in p1.rooms.AsEnumerable()
+                        where full.cID == fName && full.cPass == lName
+                        select new
+                        {
+
+                            cName1 = full.cName,
+                            //NamePhoto1 = full.NamePhoto 
+
+                        }).First();
+
+
+
+                if (modelP1.rooms != null)
+                {
+
+                    //Session["ID"] = fName;
+                    //Session["PASS"] = lName;
+                    //user model = p1.users.FirstOrDefault(x => x.userName == fName && x.userPass == lName);
+                    //model.status = true;
+                    //Session["login"] = true;
+                    //p1.SaveChanges();
+
+                    return Json(new { status = "200", message = "success" });
+                }
+                else
+                {
+                    //Session["login"] = false;
+                    return Json(new { status = "500", message = "cannot login" });
+                }
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Session["login"] = false;
+                return Json(new { status = "500", message = ex.Message });
+            }
+        }
+        public JsonResult Logout()
         {
             try
             {
